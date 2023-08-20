@@ -20,15 +20,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +38,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.meditationui.ui.theme.AquaBlue
+import com.example.meditationui.ui.theme.Beige1
+import com.example.meditationui.ui.theme.Beige2
+import com.example.meditationui.ui.theme.Beige3
 import com.example.meditationui.ui.theme.BlueViolet1
 import com.example.meditationui.ui.theme.BlueViolet2
 import com.example.meditationui.ui.theme.BlueViolet3
@@ -49,6 +52,9 @@ import com.example.meditationui.ui.theme.LightGreen1
 import com.example.meditationui.ui.theme.LightGreen2
 import com.example.meditationui.ui.theme.LightGreen3
 import com.example.meditationui.ui.theme.LightRed
+import com.example.meditationui.ui.theme.OrangeYellow1
+import com.example.meditationui.ui.theme.OrangeYellow2
+import com.example.meditationui.ui.theme.OrangeYellow3
 import com.example.meditationui.ui.theme.TextWhite
 
 @Composable
@@ -58,7 +64,7 @@ fun HomeScreen() {
         .fillMaxSize()
 
     ) {
-            Column {
+        Column {
                 GreetingSection()
                 ChipSection(chips = listOf("Sweet sleep","Insomnia", "Depression", "Night", "Day"))
                 CurrentMeditation()
@@ -77,11 +83,109 @@ fun HomeScreen() {
                         LightGreen2,
                         LightGreen3
                     ),
-                ))
-            }
+                    Feature(
+                        title = "Night island",
+                        R.drawable.ic_headphone,
+                        OrangeYellow1,
+                        OrangeYellow2,
+                        OrangeYellow3
+                    ),
+                    Feature(
+                        title = "Calming sounds",
+                        R.drawable.ic_headphone,
+                        Beige1,
+                        Beige2,
+                        Beige3
+                    )
+                )
+                ) 
+            
+        }
+        BottomMenu(items = listOf(
+            BottomMenuContent("Home", R.drawable.ic_home),
+            BottomMenuContent("Meditate", R.drawable.ic_bubble),
+            BottomMenuContent("Sleep", R.drawable.ic_moon),
+            BottomMenuContent("Music", R.drawable.ic_music),
+            BottomMenuContent("Profile", R.drawable.ic_profile)
+        ), modifier = Modifier
+            .align(Alignment.BottomCenter)
+
+        )
     }
 }
 
+@Composable
+fun BottomMenu(
+    items: List<BottomMenuContent>,
+    modifier: Modifier = Modifier,
+    activeHighlightColor: Color = ButtonBlue,
+    activeTextColor: Color = Color.White,
+    inactiveTextColor: Color = AquaBlue,
+    initialSelectedItemIndex: Int = 0
+) {
+    var selectedItemIndex by remember {
+        mutableStateOf(initialSelectedItemIndex)
+    }
+    
+    Row (
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(DeepBlue)
+            .padding(15.dp)
+    ){
+        items.forEachIndexed { index, item ->
+                BottomMenuItem(
+                    item = item,
+                    isSelected = index == selectedItemIndex,
+                    activeHighlightColor = activeHighlightColor,
+                    activeTextColor = activeTextColor,
+                    inactiveTextColor = inactiveTextColor
+                ) {
+                    selectedItemIndex = index
+                }
+        }
+    }
+}
+
+@Composable
+fun BottomMenuItem(
+    item: BottomMenuContent,
+    isSelected: Boolean = false,
+    activeHighlightColor: Color = ButtonBlue,
+    activeTextColor: Color = Color.White,
+    inactiveTextColor: Color = AquaBlue,
+    onItemClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.clickable {
+            onItemClick()
+        }
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .background(if (isSelected) activeHighlightColor else Color.Transparent)
+                .padding(10.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = item.iconId),
+                    contentDescription = item.title,
+                    tint = if (isSelected) activeTextColor else inactiveTextColor,
+                    modifier = Modifier.size(20.dp)
+            )
+        }
+        Text(
+            text = item.title,
+            color = if(isSelected) activeTextColor else inactiveTextColor
+        )
+    }
+
+}
 @Composable
 fun GreetingSection(
     name: String = "Marcin"
